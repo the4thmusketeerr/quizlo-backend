@@ -37,3 +37,7 @@ googleclient.json
 .DS_Store
 
 /generated/prisma
+
+
+# markdown files
+*.md

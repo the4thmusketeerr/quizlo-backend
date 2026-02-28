@@ -1,5 +1,7 @@
 import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
+import {cloudinary} from "../config/cloudinary.js"
+
 import "dotenv/config";
 
 /**
@@ -180,6 +182,50 @@ async function changePassword(req, res) {
   }
 }
 
-async function uploadProfilePicture(req, res) {}
+async function uploadProfilePicture(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: "No image file provided",
+      });
+    }
+    // Upload buffer to Cloudinary using a stream
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "quizlo/profile-pictures",
+          public_id: `user_${req.user.id}`,
+          overwrite: true,
+          transformation: [
+            { width: 400, height: 400, crop: "fill", gravity: "face" },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+      uploadStream.end(req.file.buffer);
+    });
+    // Save the URL to the database
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { profilePicture: result.secure_url },
+    });
+    delete user.password;
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully",
+      data: user,
+    });   
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to upload profile picture",
+    });
+  }
+}
 
 export { getUser, updateProfile, changePassword, uploadProfilePicture };
