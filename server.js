@@ -8,6 +8,7 @@ import passport from "passport";
 import session from "express-session";
 import userRouter from "./routes/user.js";
 import authRouter from "./routes/auth.js";
+import quizRouter from "./routes/quiz.js";
 
 const app = express();
 
@@ -43,6 +44,9 @@ app.use("/auth", authRouter);
 
 // User Routes
 app.use("/user", userRouter);
+
+// Quiz Routes
+app.use("/quiz", quizRouter);
 
 const port = 9000;
 

@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
-import {cloudinary} from "../config/cloudinary.js"
+import { cloudinary } from "../config/cloudinary.js";
 
 import "dotenv/config";
 
@@ -49,7 +49,7 @@ async function updateProfile(req, res) {
     console.log("Update data:", req.body);
 
     // Define fields that cannot be updated (password has separate endpoint)
-    const protectedFields = ["id", "password", "created_at", "updated_at"];
+    const protectedFields = ["id", "password", "createdAt", "updatedAt"];
 
     // Create a sanitized update object
     const updateData = { ...req.body };
@@ -182,6 +182,10 @@ async function changePassword(req, res) {
   }
 }
 
+/**
+ * Upload a profile picture for the authenticated user
+ * @route POST /user/profile-picture
+ */
 async function uploadProfilePicture(req, res) {
   try {
     if (!req.file) {
@@ -218,7 +222,7 @@ async function uploadProfilePicture(req, res) {
       success: true,
       message: "Profile picture updated successfully",
       data: user,
-    });   
+    });
   } catch (error) {
     console.error("Error uploading profile picture:", error);
     return res.status(500).json({
@@ -228,4 +232,31 @@ async function uploadProfilePicture(req, res) {
   }
 }
 
-export { getUser, updateProfile, changePassword, uploadProfilePicture };
+async function deleteProfilePicture(req, res) {
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { profilePicture: null },
+    });
+    delete user.password; // Remove password from response
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture deleted successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error deleting profile picture:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to delete profile picture",
+    });
+  }
+}
+
+export {
+  getUser,
+  updateProfile,
+  changePassword,
+  uploadProfilePicture,
+  deleteProfilePicture,
+};

@@ -18,6 +18,7 @@
         "express-session": "^1.19.0",
         "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.3",
+        "lucide": "^0.577.0",
         "morgan": "^1.10.1",
         "multer": "^2.0.2",
         "nodemailer": "^8.0.1",
@@ -317,6 +318,8 @@
     "long": ["long@5.3.2", "", {}, "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA=="],
 
     "lru.min": ["lru.min@1.1.4", "", {}, "sha512-DqC6n3QQ77zdFpCMASA1a3Jlb64Hv2N2DciFGkO/4L9+q/IpIAuRlKOvCXabtRW6cQf8usbmM6BE/TOPysCdIA=="],
+
+    "lucide": ["lucide@0.577.0", "", {}, "sha512-PpC/m5eOItp/WU/GlQPFBXDOhq6HibL73KzYP37OX3LM7VmzWQF8voEj8QRWUFvy9FIKfeDQkWYoyS1D/MdWFA=="],
 
     "math-intrinsics": ["math-intrinsics@1.1.0", "", {}, "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g=="],
 

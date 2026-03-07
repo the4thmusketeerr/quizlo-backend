@@ -122,15 +122,142 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  first_name: 'first_name',
-  last_name: 'last_name',
+  firstName: 'firstName',
+  lastName: 'lastName',
   username: 'username',
   email: 'email',
   password: 'password',
-  createdAt: 'createdAt',
   profilePicture: 'profilePicture',
+  bio: 'bio',
+  xp: 'xp',
+  level: 'level',
+  streak: 'streak',
   resetPasswordToken: 'resetPasswordToken',
-  resetPasswordExpires: 'resetPasswordExpires'
+  resetPasswordExpiry: 'resetPasswordExpiry',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  icon: 'icon',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.QuizScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  difficulty: 'difficulty',
+  isPrivate: 'isPrivate',
+  isDraft: 'isDraft',
+  creationMode: 'creationMode',
+  plays: 'plays',
+  categoryId: 'categoryId',
+  creatorId: 'creatorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuestionScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  type: 'type',
+  explanation: 'explanation',
+  order: 'order',
+  quizId: 'quizId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AnswerOptionScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  isCorrect: 'isCorrect',
+  order: 'order',
+  questionId: 'questionId'
+};
+
+exports.Prisma.GameSessionScalarFieldEnum = {
+  id: 'id',
+  roomCode: 'roomCode',
+  status: 'status',
+  currentQuestionIndex: 'currentQuestionIndex',
+  isPublic: 'isPublic',
+  quizId: 'quizId',
+  hostId: 'hostId',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GameSettingsScalarFieldEnum = {
+  id: 'id',
+  numQuestions: 'numQuestions',
+  timerPerQuestion: 'timerPerQuestion',
+  maxPlayers: 'maxPlayers',
+  gameSessionId: 'gameSessionId'
+};
+
+exports.Prisma.GameParticipantScalarFieldEnum = {
+  id: 'id',
+  score: 'score',
+  streak: 'streak',
+  rank: 'rank',
+  gameSessionId: 'gameSessionId',
+  userId: 'userId',
+  joinedAt: 'joinedAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ParticipantAnswerScalarFieldEnum = {
+  id: 'id',
+  isCorrect: 'isCorrect',
+  pointsEarned: 'pointsEarned',
+  timeToAnswer: 'timeToAnswer',
+  participantId: 'participantId',
+  questionId: 'questionId',
+  selectedOptionId: 'selectedOptionId',
+  answeredAt: 'answeredAt'
+};
+
+exports.Prisma.QuizAttemptScalarFieldEnum = {
+  id: 'id',
+  score: 'score',
+  totalQuestions: 'totalQuestions',
+  accuracy: 'accuracy',
+  xpEarned: 'xpEarned',
+  completedAt: 'completedAt',
+  quizId: 'quizId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AttemptAnswerScalarFieldEnum = {
+  id: 'id',
+  isCorrect: 'isCorrect',
+  attemptId: 'attemptId',
+  questionId: 'questionId',
+  selectedOptionId: 'selectedOptionId'
+};
+
+exports.Prisma.NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  emailNotifications: 'emailNotifications',
+  quizReminders: 'quizReminders',
+  studyStreakReminders: 'studyStreakReminders',
+  weeklyReports: 'weeklyReports',
+  userId: 'userId'
+};
+
+exports.Prisma.PrivacySettingsScalarFieldEnum = {
+  id: 'id',
+  profileVisibility: 'profileVisibility',
+  showQuizzes: 'showQuizzes',
+  showAchievements: 'showAchievements',
+  userId: 'userId'
 };
 
 exports.Prisma.SortOrder = {
@@ -147,10 +274,43 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.Difficulty = exports.$Enums.Difficulty = {
+  Easy: 'Easy',
+  Medium: 'Medium',
+  Hard: 'Hard'
+};
 
+exports.CreationMode = exports.$Enums.CreationMode = {
+  Manual: 'Manual',
+  Ai: 'Ai'
+};
+
+exports.QuestionType = exports.$Enums.QuestionType = {
+  Mcq: 'Mcq',
+  TrueFalse: 'TrueFalse'
+};
+
+exports.GameStatus = exports.$Enums.GameStatus = {
+  Waiting: 'Waiting',
+  InProgress: 'InProgress',
+  Completed: 'Completed',
+  Cancelled: 'Cancelled'
+};
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Category: 'Category',
+  Quiz: 'Quiz',
+  Question: 'Question',
+  AnswerOption: 'AnswerOption',
+  GameSession: 'GameSession',
+  GameSettings: 'GameSettings',
+  GameParticipant: 'GameParticipant',
+  ParticipantAnswer: 'ParticipantAnswer',
+  QuizAttempt: 'QuizAttempt',
+  AttemptAnswer: 'AttemptAnswer',
+  NotificationPreference: 'NotificationPreference',
+  PrivacySettings: 'PrivacySettings'
 };
 
 /**

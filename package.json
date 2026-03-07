@@ -8,6 +8,9 @@
     "dev": "nodemon server.js"
   },
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -28,6 +31,7 @@
     "express-session": "^1.19.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "lucide": "^0.577.0",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",

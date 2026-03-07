@@ -3,6 +3,7 @@ import {
   updateProfile,
   changePassword,
   uploadProfilePicture,
+  deleteProfilePicture,
 } from "../controllers/user.js";
 import { verifyToken } from "../middleware/token.js";
 import { upload } from "../middleware/upload.js";
@@ -19,5 +20,6 @@ userRouter.patch(
   upload().single("profilePicture"),
   uploadProfilePicture,
 );
+userRouter.delete("/profile-picture", verifyToken, deleteProfilePicture);
 
 export default userRouter;

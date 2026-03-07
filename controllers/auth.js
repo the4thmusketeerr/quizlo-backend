@@ -40,8 +40,8 @@ async function signupUser(req, res) {
     const newUser = await prisma.user.create({
       data: {
         id,
-        first_name: data.first_name,
-        last_name: data.last_name,
+        firstName: data.first_name,
+        lastName: data.last_name,
         email: data.email,
         username: data.username,
         password: await hashPassword(data.password),
@@ -218,7 +218,7 @@ async function forgotPassword(req, res) {
       where: { email },
       data: {
         resetPasswordToken: hashedToken,
-        resetPasswordExpires: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+        resetPasswordExpiry: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
       },
     });
 
@@ -249,7 +249,7 @@ async function resetPassword(req, res) {
     const user = await prisma.user.findFirst({
       where: {
         resetPasswordToken: hashedToken,
-        resetPasswordExpires: { gte: new Date() },
+        resetPasswordExpiry: { gte: new Date() },
       },
     });
 
@@ -266,7 +266,7 @@ async function resetPassword(req, res) {
       data: {
         password: hashedPassword,
         resetPasswordToken: null,
-        resetPasswordExpires: null,
+        resetPasswordExpiry: null,
       },
     });
 
