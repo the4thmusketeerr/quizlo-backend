@@ -22,8 +22,15 @@ enum CreationMode {
 }
 
 enum QuestionType {
-  Mcq       @map("mcq")
-  TrueFalse @map("true_false")
+  Mcq             @map("mcq")
+  TrueFalse       @map("true_false")
+  MultipleSelect  @map("multiple_select")
+  ShortAnswer     @map("short_answer")
+  LongAnswer      @map("long_answer")
+  FillInTheBlank  @map("fill_in_the_blank")
+  Matching        @map("matching")
+  OrderSequencing @map("order_sequencing")
+  Numeric         @map("numeric")
 }
 
 enum GameStatus {
@@ -33,23 +40,22 @@ enum GameStatus {
   Cancelled  @map("cancelled")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. USER
 // Core user account — authentication, profile, gamification
 // ─────────────────────────────────────────────────────────────────────────────
 model User {
-  id               String   @id @default(cuid())
-  firstName        String   @map("first_name")
-  lastName         String   @map("last_name")
-  username         String   @unique
-  email            String   @unique
-  password         String
-  profilePicture   String?  @map("profile_picture")
-  bio              String?  @db.VarChar(200)
-  xp               Int      @default(0)
-  level            Int      @default(1)
-  streak           Int      @default(0)
+  id             String  @id @default(cuid())
+  firstName      String  @map("first_name")
+  lastName       String  @map("last_name")
+  username       String  @unique
+  email          String  @unique
+  password       String
+  profilePicture String? @map("profile_picture")
+  bio            String? @db.VarChar(200)
+  xp             Int     @default(0)
+  level          Int     @default(1)
+  streak         Int     @default(0)
 
   // Password reset
   resetPasswordToken  String?   @map("reset_password_token")
@@ -57,20 +63,20 @@ model User {
 
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt       @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
   quizzes                Quiz[]
-  hostedGameSessions     GameSession[]       @relation("HostedSessions")
+  hostedGameSessions     GameSession[]           @relation("HostedSessions")
   gameParticipations     GameParticipant[]
   quizAttempts           QuizAttempt[]
   notificationPreference NotificationPreference?
   privacySettings        PrivacySettings?
+  ratings                QuizRating[]
 
   @@index([resetPasswordToken])
   @@map("users")
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 2. CATEGORY
@@ -88,20 +94,22 @@ model Category {
   @@map("categories")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. QUIZ
 // A quiz created by a user — manually or via AI generation
 // ─────────────────────────────────────────────────────────────────────────────
 model Quiz {
-  id           String       @id @default(cuid())
-  title        String
-  description  String?
-  difficulty   Difficulty   @default(Easy)
-  isPrivate    Boolean      @default(false) @map("is_private")
-  isDraft      Boolean      @default(false) @map("is_draft")
-  creationMode CreationMode @default(Manual) @map("creation_mode")
-  plays        Int          @default(0)
+  id            String       @id @default(cuid())
+  title         String
+  description   String?
+  difficulty    Difficulty   @default(Easy)
+  timeAllocated Int?         @map("time_allocated") // in seconds
+  isPrivate     Boolean      @default(false) @map("is_private")
+  isDraft       Boolean      @default(false) @map("is_draft")
+  creationMode  CreationMode @default(Manual) @map("creation_mode")
+  plays         Int          @default(0)
+  rating        Int          @default(0)
+  coverPicture  String?      @map("cover_picture")
 
   // Foreign keys
   categoryId String @map("category_id")
@@ -109,7 +117,7 @@ model Quiz {
 
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt       @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
   category     Category      @relation(fields: [categoryId], references: [id])
@@ -117,13 +125,38 @@ model Quiz {
   questions    Question[]
   gameSessions GameSession[]
   quizAttempts QuizAttempt[]
+  ratings      QuizRating[]
 
   @@index([categoryId])
   @@index([creatorId])
-  @@index([isPrivate, isDraft])
   @@map("quizzes")
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 3.5 QUIZ RATING
+// Individual ratings given by users to quizzes
+// ─────────────────────────────────────────────────────────────────────────────
+model QuizRating {
+  id        String   @id @default(cuid())
+  rating    Int // 1–5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Foreign keys
+  quizId String @map("quiz_id")
+  userId String @map("user_id")
+
+  // ── Relations ──
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // A user can only rate a quiz once
+  @@unique([quizId, userId])
+  @@index([quizId])
+  @@index([userId])
+  @@map("quiz_ratings")
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 4. QUESTION
@@ -134,6 +167,7 @@ model Question {
   text        String       @db.Text
   type        QuestionType @default(Mcq)
   explanation String?      @db.Text
+  media       String[]
   order       Int
 
   // Foreign key
@@ -153,7 +187,6 @@ model Question {
   @@map("questions")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 5. ANSWER OPTION
 // A possible answer to a question (2–4 options per question)
@@ -162,6 +195,7 @@ model AnswerOption {
   id        String  @id @default(cuid())
   text      String
   isCorrect Boolean @default(false) @map("is_correct")
+  matchText String? @map("match_text")
   order     Int
 
   // Foreign key
@@ -176,7 +210,6 @@ model AnswerOption {
   @@index([questionId])
   @@map("answer_options")
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. GAME SESSION (Live Game Room)
@@ -197,7 +230,7 @@ model GameSession {
   startedAt DateTime? @map("started_at")
   endedAt   DateTime? @map("ended_at")
   createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt      @map("updated_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   // ── Relations ──
   quiz         Quiz              @relation(fields: [quizId], references: [id])
@@ -210,15 +243,14 @@ model GameSession {
   @@map("game_sessions")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 7. GAME SETTINGS
 // Configuration for a live game session
 // ─────────────────────────────────────────────────────────────────────────────
 model GameSettings {
   id               String @id @default(cuid())
-  numQuestions     Int    @map("num_questions")       // 5, 10, 15, or -1 for "All"
-  timerPerQuestion Int    @map("timer_per_question")  // 10, 20, or 30 seconds
+  numQuestions     Int    @map("num_questions") // 5, 10, 15, or -1 for "All"
+  timerPerQuestion Int    @map("timer_per_question") // 10, 20, or 30 seconds
   maxPlayers       Int    @default(25) @map("max_players")
 
   // Foreign key (1-to-1 with GameSession)
@@ -229,7 +261,6 @@ model GameSettings {
 
   @@map("game_settings")
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 8. GAME PARTICIPANT
@@ -247,7 +278,7 @@ model GameParticipant {
 
   // Timestamps
   joinedAt  DateTime @default(now()) @map("joined_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
   gameSession GameSession         @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
@@ -261,7 +292,6 @@ model GameParticipant {
   @@map("game_participants")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 9. PARTICIPANT ANSWER
 // A player's answer to a question during a live game
@@ -270,12 +300,15 @@ model ParticipantAnswer {
   id           String  @id @default(cuid())
   isCorrect    Boolean @map("is_correct")
   pointsEarned Int     @default(0) @map("points_earned")
-  timeToAnswer Int?    @map("time_to_answer")  // seconds taken to answer
+  timeToAnswer Int?    @map("time_to_answer") // seconds taken to answer
 
   // Foreign keys
   participantId    String  @map("participant_id")
   questionId       String  @map("question_id")
-  selectedOptionId String? @map("selected_option_id")  // null if timed out
+  selectedOptionId String? @map("selected_option_id") // null if timed out
+  selectedOptionIds String[] @default([]) @map("selected_option_ids")
+  textResponse      String?  @map("text_response")
+  responseJson      Json?    @map("response_json")
 
   // Timestamps
   answeredAt DateTime @default(now()) @map("answered_at")
@@ -292,7 +325,6 @@ model ParticipantAnswer {
   @@map("participant_answers")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 10. QUIZ ATTEMPT (Solo Study Mode)
 // Tracks a user's solo study/practice attempt of a quiz
@@ -301,9 +333,9 @@ model QuizAttempt {
   id             String    @id @default(cuid())
   score          Int       @default(0)
   totalQuestions Int       @map("total_questions")
-  accuracy       Float                              // percentage 0–100
+  accuracy       Float // percentage 0–100
   xpEarned       Int       @default(0) @map("xp_earned")
-  completedAt    DateTime? @map("completed_at")     // null if incomplete
+  completedAt    DateTime? @map("completed_at") // null if incomplete
 
   // Foreign keys
   quizId String @map("quiz_id")
@@ -311,7 +343,7 @@ model QuizAttempt {
 
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
   quiz    Quiz            @relation(fields: [quizId], references: [id], onDelete: Cascade)
@@ -323,7 +355,6 @@ model QuizAttempt {
   @@index([userId, quizId])
   @@map("quiz_attempts")
 }
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 11. ATTEMPT ANSWER
@@ -337,10 +368,13 @@ model AttemptAnswer {
   attemptId        String  @map("attempt_id")
   questionId       String  @map("question_id")
   selectedOptionId String? @map("selected_option_id")
+  selectedOptionIds String[] @default([]) @map("selected_option_ids")
+  textResponse      String?  @map("text_response")
+  responseJson      Json?    @map("response_json")
 
   // ── Relations ──
-  attempt        QuizAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  question       Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempt        QuizAttempt   @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
   selectedOption AnswerOption? @relation(fields: [selectedOptionId], references: [id])
 
   // A user can only answer each question once per attempt
@@ -349,17 +383,16 @@ model AttemptAnswer {
   @@map("attempt_answers")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 12. NOTIFICATION PREFERENCE
 // Per-user notification settings
 // ─────────────────────────────────────────────────────────────────────────────
 model NotificationPreference {
   id                   String  @id @default(cuid())
-  emailNotifications   Boolean @default(true)  @map("email_notifications")
-  quizReminders        Boolean @default(true)  @map("quiz_reminders")
-  studyStreakReminders  Boolean @default(false) @map("study_streak_reminders")
-  weeklyReports        Boolean @default(true)  @map("weekly_reports")
+  emailNotifications   Boolean @default(true) @map("email_notifications")
+  quizReminders        Boolean @default(true) @map("quiz_reminders")
+  studyStreakReminders Boolean @default(false) @map("study_streak_reminders")
+  weeklyReports        Boolean @default(true) @map("weekly_reports")
 
   // Foreign key (1-to-1 with User)
   userId String @unique @map("user_id")
@@ -370,15 +403,14 @@ model NotificationPreference {
   @@map("notification_preferences")
 }
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 13. PRIVACY SETTINGS
 // Per-user privacy preferences
 // ─────────────────────────────────────────────────────────────────────────────
 model PrivacySettings {
   id                String  @id @default(cuid())
-  profileVisibility Boolean @default(true)  @map("profile_visibility")
-  showQuizzes       Boolean @default(true)  @map("show_quizzes")
+  profileVisibility Boolean @default(true) @map("profile_visibility")
+  showQuizzes       Boolean @default(true) @map("show_quizzes")
   showAchievements  Boolean @default(false) @map("show_achievements")
 
   // Foreign key (1-to-1 with User)

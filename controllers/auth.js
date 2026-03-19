@@ -53,7 +53,7 @@ async function signupUser(req, res) {
 
     // Generate token (auto-login after signup)
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
+      { id: newUser.id, email: newUser.email }, // Sign the token with the user's ID and email
       process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_EXPIRES_IN,
@@ -138,7 +138,7 @@ async function loginUser(req, res) {
 
     // Generate token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email }, // Sign the token with the user's ID and email
       process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_EXPIRES_IN,

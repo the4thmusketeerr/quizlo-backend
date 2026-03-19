@@ -14,12 +14,14 @@ export function upload() {
         "image/png",
         "image/gif",
         "image/webp",
+        "image/jpg",
+        "image/svg+xml",
       ];
       if (allowedMimes.includes(file.mimetype)) {
         cb(null, true);
       } else {
         cb(
-          new Error("Only image files (jpeg, png, gif, webp) are allowed"),
+          new Error("Only image files (jpeg, png, gif, webp, jpg, svg) are allowed"),
           false,
         );
       }

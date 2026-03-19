@@ -9,6 +9,7 @@ import session from "express-session";
 import userRouter from "./routes/user.js";
 import authRouter from "./routes/auth.js";
 import quizRouter from "./routes/quiz.js";
+import mediaRouter from "./routes/media.js";
 
 const app = express();
 
@@ -47,6 +48,9 @@ app.use("/user", userRouter);
 
 // Quiz Routes
 app.use("/quiz", quizRouter);
+
+// Media Routes
+app.use("/media", mediaRouter);
 
 const port = 9000;
 

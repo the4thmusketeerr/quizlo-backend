@@ -150,14 +150,27 @@ exports.Prisma.QuizScalarFieldEnum = {
   title: 'title',
   description: 'description',
   difficulty: 'difficulty',
+  timeAllocated: 'timeAllocated',
   isPrivate: 'isPrivate',
   isDraft: 'isDraft',
   creationMode: 'creationMode',
   plays: 'plays',
+  rating: 'rating',
+  coverPicture: 'coverPicture',
   categoryId: 'categoryId',
   creatorId: 'creatorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QuizRatingScalarFieldEnum = {
+  id: 'id',
+  rating: 'rating',
+  comment: 'comment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  quizId: 'quizId',
+  userId: 'userId'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
@@ -165,6 +178,7 @@ exports.Prisma.QuestionScalarFieldEnum = {
   text: 'text',
   type: 'type',
   explanation: 'explanation',
+  media: 'media',
   order: 'order',
   quizId: 'quizId',
   createdAt: 'createdAt'
@@ -174,6 +188,7 @@ exports.Prisma.AnswerOptionScalarFieldEnum = {
   id: 'id',
   text: 'text',
   isCorrect: 'isCorrect',
+  matchText: 'matchText',
   order: 'order',
   questionId: 'questionId'
 };
@@ -219,6 +234,9 @@ exports.Prisma.ParticipantAnswerScalarFieldEnum = {
   participantId: 'participantId',
   questionId: 'questionId',
   selectedOptionId: 'selectedOptionId',
+  selectedOptionIds: 'selectedOptionIds',
+  textResponse: 'textResponse',
+  responseJson: 'responseJson',
   answeredAt: 'answeredAt'
 };
 
@@ -240,7 +258,10 @@ exports.Prisma.AttemptAnswerScalarFieldEnum = {
   isCorrect: 'isCorrect',
   attemptId: 'attemptId',
   questionId: 'questionId',
-  selectedOptionId: 'selectedOptionId'
+  selectedOptionId: 'selectedOptionId',
+  selectedOptionIds: 'selectedOptionIds',
+  textResponse: 'textResponse',
+  responseJson: 'responseJson'
 };
 
 exports.Prisma.NotificationPreferenceScalarFieldEnum = {
@@ -265,6 +286,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -273,6 +299,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.Difficulty = exports.$Enums.Difficulty = {
   Easy: 'Easy',
@@ -287,7 +319,14 @@ exports.CreationMode = exports.$Enums.CreationMode = {
 
 exports.QuestionType = exports.$Enums.QuestionType = {
   Mcq: 'Mcq',
-  TrueFalse: 'TrueFalse'
+  TrueFalse: 'TrueFalse',
+  MultipleSelect: 'MultipleSelect',
+  ShortAnswer: 'ShortAnswer',
+  LongAnswer: 'LongAnswer',
+  FillInTheBlank: 'FillInTheBlank',
+  Matching: 'Matching',
+  OrderSequencing: 'OrderSequencing',
+  Numeric: 'Numeric'
 };
 
 exports.GameStatus = exports.$Enums.GameStatus = {
@@ -301,6 +340,7 @@ exports.Prisma.ModelName = {
   User: 'User',
   Category: 'Category',
   Quiz: 'Quiz',
+  QuizRating: 'QuizRating',
   Question: 'Question',
   AnswerOption: 'AnswerOption',
   GameSession: 'GameSession',
