@@ -53,9 +53,10 @@ model User {
   password       String
   profilePicture String? @map("profile_picture")
   bio            String? @db.VarChar(200)
-  xp             Int     @default(0)
-  level          Int     @default(1)
-  streak         Int     @default(0)
+  xp              Int       @default(0)
+  level           Int       @default(1)
+  streak          Int       @default(0)
+  lastLoginDate   DateTime? @map("last_login_date")
 
   // Password reset
   resetPasswordToken  String?   @map("reset_password_token")

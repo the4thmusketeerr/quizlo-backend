@@ -591,6 +591,71 @@ async function main() {
   });
   
   console.log(`  ✅ System user ready: ${systemUser.username}`);
+
+  // ── Dev Test Users ────────────────────────────────────────────────────────
+  // Password for ALL test users: TestPassword123!
+  console.log("\n👥 Seeding dev test users...\n");
+
+  const testPassword = await bcrypt.hash("TestPassword123!", 10);
+
+  const testUsers = [
+    {
+      // Level 1 — Novice (fresh account, 0 XP)
+      firstName: "Alex",
+      lastName:  "Novice",
+      username:  "alex_novice",
+      email:     "alex@test.com",
+      xp:        0,
+      level:     1,
+      streak:    0,
+    },
+    {
+      // Level 5 — Scholar (Beginner tier, 700 XP)
+      firstName: "Sam",
+      lastName:  "Scholar",
+      username:  "sam_scholar",
+      email:     "sam@test.com",
+      xp:        700,
+      level:     5,
+      streak:    7,
+    },
+    {
+      // Level 15 — Sage (Silver tier, 11 000 XP)
+      firstName: "Jordan",
+      lastName:  "Sage",
+      username:  "jordan_sage",
+      email:     "jordan@test.com",
+      xp:        11_000,
+      level:     15,
+      streak:    30,
+    },
+  ];
+
+  for (const u of testUsers) {
+    const result = await prisma.user.upsert({
+      where: { email: u.email },
+      update: { xp: u.xp, level: u.level, streak: u.streak },
+      create: {
+        id:        generateId("usr"),
+        firstName: u.firstName,
+        lastName:  u.lastName,
+        username:  u.username,
+        email:     u.email,
+        password:  testPassword,
+        xp:        u.xp,
+        level:     u.level,
+        streak:    u.streak,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+    console.log(
+      `  ✅ ${result.username} (Level ${result.level}, ${result.xp} XP) — ${result.email}`
+    );
+  }
+  console.log(`\n  🔑 All test user passwords: TestPassword123!`);
+  // ─────────────────────────────────────────────────────────────────────────
+
   
   console.log("\n🧠 Seeding sample quizzes...\n");
   

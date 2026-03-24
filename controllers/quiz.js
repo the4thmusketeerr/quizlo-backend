@@ -1,5 +1,44 @@
 import { prisma } from "../lib/prisma.js";
 import { generateId } from "../utils/id.js";
+import { getLevelFromXP, XP_REWARDS } from "../utils/xp.js";
+
+/**
+ * Converts frontend question data into the answerOption rows to be stored.
+ *
+ * Text-based types (ShortAnswer, LongAnswer, FillInTheBlank) store their
+ * answer in `q.correctAnswerText`, not inside `q.options`.
+ * Numeric stores its answer in `q.correctAnswerNumeric`.
+ * All other types (Mcq, TrueFalse, MultipleSelect, Matching, OrderSequencing)
+ * use the standard `q.options` array.
+ */
+function buildAnswerOptions(q) {
+  const TEXT_TYPES = ["ShortAnswer", "LongAnswer", "FillInTheBlank"];
+
+  // ── Free-text answer types ────────────────────────────────────────────────
+  if (TEXT_TYPES.includes(q.type)) {
+    const answer = (q.correctAnswerText ?? "").trim();
+    if (!answer) return []; // nothing to store yet (e.g. draft)
+    return [{ id: generateId("opt"), text: answer, isCorrect: true, matchText: null, order: 1 }];
+  }
+
+  // ── Numeric answer ───────────────────────────────────────────────────────
+  if (q.type === "Numeric") {
+    const answer = q.correctAnswerNumeric !== undefined && q.correctAnswerNumeric !== null && q.correctAnswerNumeric !== ""
+      ? String(q.correctAnswerNumeric)
+      : null;
+    if (!answer) return [];
+    return [{ id: generateId("opt"), text: answer, isCorrect: true, matchText: null, order: 1 }];
+  }
+
+  // ── All other types (options array) ──────────────────────────────────────
+  return (q.options ?? []).map((opt, idx) => ({
+    id: generateId("opt"),
+    text: opt.text ?? "",
+    isCorrect: ["Matching", "OrderSequencing"].includes(q.type) ? true : !!opt.isCorrect,
+    matchText: opt.matchText ?? null,
+    order: opt.order ?? idx + 1,
+  }));
+}
 
 async function createQuiz(req, res) {
   try {
@@ -21,6 +60,7 @@ async function createQuiz(req, res) {
 
     const quiz = await prisma.quiz.create({
       data: {
+        id: generateId("quiz"),
         title: payload.title,
         description: payload.description,
         difficulty: payload.difficulty,
@@ -34,19 +74,14 @@ async function createQuiz(req, res) {
         questions: {
           create:
             payload.questions?.map((q, qIndex) => ({
+              id: generateId("ques"),
               text: q.text,
               type: q.type || "Mcq",
               explanation: q.explanation,
               media: q.media || [],
               order: qIndex + 1,
               answerOptions: {
-                create:
-                  q.options?.map((opt, optIndex) => ({
-                    text: opt.text,
-                    isCorrect: opt.isCorrect,
-                    matchText: opt.matchText,
-                    order: optIndex + 1,
-                  })) || [],
+                create: buildAnswerOptions(q),
               },
             })) || [],
         },
@@ -54,6 +89,19 @@ async function createQuiz(req, res) {
     });
 
     console.log("Backend: Quiz created successfully:", quiz.id);
+
+    // Award XP to creator when publishing a real quiz (not a draft)
+    if (!payload.isDraft) {
+      const creator = await prisma.user.findUnique({ where: { id: creatorId } });
+      if (creator) {
+        const newTotalXP = creator.xp + XP_REWARDS.CREATE_QUIZ;
+        const newLevel   = getLevelFromXP(newTotalXP);
+        await prisma.user.update({
+          where: { id: creatorId },
+          data: { xp: newTotalXP, level: newLevel },
+        });
+      }
+    }
 
     return res.status(201).json({
       success: true,
@@ -70,6 +118,209 @@ async function createQuiz(req, res) {
   }
 }
 
+async function updateQuiz(req, res) {
+  try {
+    const quizId = req.params.id;
+    const userId = req.user.id;
+    const { questions, deletedQuestionIds, ...rawData } = req.body;
+
+    // 1. Ownership & Existence Check (outside transaction — no writes needed)
+    const existingQuiz = await prisma.quiz.findUnique({ where: { id: quizId } });
+
+    if (!existingQuiz) {
+      return res.status(404).json({ success: false, message: "Quiz not found." });
+    }
+
+    if (existingQuiz.creatorId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to edit this quiz.",
+      });
+    }
+
+    // 2. Strip restricted fields from the top-level update payload
+    ["id", "plays", "rating", "createdAt", "categoryId", "creatorId", "creationMode", "updatedAt"]
+      .forEach((field) => delete rawData[field]);
+
+    // 3. Interactive transaction with a 30s timeout
+    //    (the { timeout } option is only honoured on the callback form, NOT the array form)
+    await prisma.$transaction(async (tx) => {
+
+      // A. Update top-level quiz fields
+      await tx.quiz.update({ where: { id: quizId }, data: rawData });
+
+      // B. Delete removed questions (cascade removes their answerOptions)
+      if (Array.isArray(deletedQuestionIds) && deletedQuestionIds.length > 0) {
+        await tx.question.deleteMany({
+          where: { id: { in: deletedQuestionIds }, quizId },
+        });
+      }
+
+      // C. Process each question
+      if (Array.isArray(questions)) {
+        for (const [qIndex, q] of questions.entries()) {
+
+          if (q.id) {
+            // ── Existing question ────────────────────────────────────────────
+            await tx.question.update({
+              where: { id: q.id },
+              data: {
+                text:        q.text,
+                type:        q.type,
+                explanation: q.explanation ?? null,
+                media:       q.media ?? [],
+                order:       qIndex + 1,
+              },
+            });
+
+            // Wipe old options and bulk-insert new ones in 2 calls (not N+1)
+            await tx.answerOption.deleteMany({ where: { questionId: q.id } });
+
+            const builtOptions = buildAnswerOptions(q);
+            if (builtOptions.length > 0) {
+              await tx.answerOption.createMany({
+                data: builtOptions.map((opt) => ({
+                  questionId: q.id,
+                  ...opt,
+                })),
+              });
+            }
+
+          } else {
+            // ── New question — create with nested options in one call ─────────
+            await tx.question.create({
+              data: {
+                id:          generateId("ques"),
+                quizId,
+                text:        q.text,
+                type:        q.type ?? "Mcq",
+                explanation: q.explanation ?? null,
+                media:       q.media ?? [],
+                order:       qIndex + 1,
+                answerOptions: {
+                  create: buildAnswerOptions(q),
+                },
+              },
+            });
+          }
+        }
+      }
+    }, { timeout: 30_000 }); // 30 s — required for Neon remote DB
+
+    // 4. Return updated quiz with questions
+    const updatedQuiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: {
+        questions: {
+          include: { answerOptions: true },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Quiz updated successfully.",
+      data: updatedQuiz,
+    });
+  } catch (error) {
+    console.error("Error updating quiz:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update quiz.",
+      error: error.message,
+    });
+  }
+}
+
+async function deleteQuiz(req, res) {
+  try {
+    const quizId = req.params.id;
+    const userId = req.user.id;
+
+    // 1. Ownership & Existence Check
+    const existingQuiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+    });
+
+    if (!existingQuiz) {
+      return res.status(404).json({
+        success: false,
+        message: "Quiz not found.",
+      });
+    }
+
+    if (existingQuiz.creatorId !== userId) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this quiz.",
+      });
+    }
+
+    // 2. Perform deletion (Cascade will handle questions and options if configured)
+    await prisma.quiz.delete({
+      where: { id: quizId },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Quiz deleted successfully.",
+    });
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete quiz.",
+      error: error.message,
+    });
+  }
+}
+
+async function getQuizQuestions(req, res){
+  try{
+    const quizId = req.params.id
+
+    if(!quizId){
+      return res.status(400).json({
+        success: false,
+        message: "Quiz ID is required.",
+      });
+    }
+
+    // Find quiz and include questions
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: {
+        questions: {
+          include: {
+            answerOptions: true,
+          },
+        },
+      },
+    });
+
+    if (!quiz) {
+      return res.status(404).json({
+        success: false,
+        message: "Quiz not found.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Quiz questions fetched successfully.",
+      data: quiz.questions,
+    });
+  }
+  catch(error){
+    console.error("Error getting quiz questions:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get quiz questions.",
+      error: error.message,
+    });
+  }
+}
 
 async function getQuizbyId(req, res) {
   try {
@@ -152,10 +403,16 @@ async function getAllQuizzes(req, res) {
         },
       },
     });
+
+
+    // if quiz status is draft or private, then don't return the quiz
+    const filteredQuizzes = quizzes.filter((quiz) => quiz.status !== "draft" && quiz.isPrivate !== true );
+
+
     return res.status(200).json({
       success: true,
-      data: quizzes,
-      count: quizzes.length,
+      data: filteredQuizzes,
+      count: filteredQuizzes.length,
     });
   } catch (error) {
     console.error("Error getting quizzes:", error);
@@ -210,6 +467,7 @@ async function startQuiz(req, res) {
     // This generates the 'attemptId' that the frontend will use for every subsequent answer
     const attempt = await prisma.quizAttempt.create({
       data: {
+        id: generateId("attm"),
         userId: userId,
         quizId: quizId,
         totalQuestions: quiz.questions.length,
@@ -376,6 +634,7 @@ async function submitAnswer(req, res) {
     await prisma.$transaction([
       prisma.attemptAnswer.create({
         data: {
+          id: generateId("ansr"),
           attemptId,
           questionId,
           selectedOptionId: (question.type === "Mcq" || question.type === "TrueFalse") ? selectedOptionId : null,
@@ -413,11 +672,21 @@ async function completeQuiz(req, res) {
     const { attemptId } = req.params;
     const userId = req.user.id;
 
-    // 1. Fetch Attempt with all answers and the original Quiz difficulty
+    // 1. Fetch Attempt with all answers and the original Quiz difficulty — plus the quiz's correct answers
     const attempt = await prisma.quizAttempt.findUnique({
       where: { id: attemptId },
       include: {
-        quiz: true,
+        quiz: {
+          include: {
+            questions: {
+              include: {
+                answerOptions: {
+                  where: { isCorrect: true },
+                },
+              },
+            },
+          },
+        },
         answers: true, // Specifically includes AttemptAnswer records
       },
     });
@@ -445,33 +714,87 @@ async function completeQuiz(req, res) {
     const correctAnswersCount = attempt.answers.filter(
       (a) => a.isCorrect,
     ).length;
-    const accuracy = (correctAnswersCount / attempt.totalQuestions) * 100;
+    const totalQuestions = attempt.totalQuestions;
+    // Build the "Master" list of correct answers for this quiz
+    const correctAnswers = attempt.quiz.questions.map((q) => {
+      let correctData = null;
+      switch (q.type) {
+        case "Mcq":
+        case "TrueFalse":
+          correctData = q.answerOptions[0]?.id;
+          break;
+        case "MultipleSelect":
+          correctData = q.answerOptions.map((o) => o.id).sort();
+          break;
+        case "ShortAnswer":
+        case "FillInTheBlank":
+        case "Numeric":
+          correctData = q.answerOptions[0]?.text;
+          break;
+        case "Matching":
+          correctData = q.answerOptions.reduce((acc, opt) => {
+            acc[opt.id] = opt.matchText;
+            return acc;
+          }, {});
+          break;
+        case "OrderSequencing":
+          correctData = [...q.answerOptions]
+            .sort((a, b) => a.order - b.order)
+            .map((o) => o.id);
+          break;
+        default:
+          correctData = null;
+      }
+      return { questionId: q.id, type: q.type, correctData };
+    });
 
-    // Logic for XP: (Score from Phase 2) * (Difficulty Multiplier)
+    // Score as a percentage: (correct / total) * 100
+    const scorePercentage = Math.round((correctAnswersCount / totalQuestions) * 100);
+
+    // 4. CALCULATE XP EARNED
+    // a) Base reward for completing the quiz
+    let xpEarned = XP_REWARDS.COMPLETE_QUIZ;
+
+    // b) Per correct answer
+    xpEarned += correctAnswersCount * XP_REWARDS.CORRECT_ANSWER;
+
+    // c) Perfect score bonus
+    if (correctAnswersCount === totalQuestions) {
+      xpEarned += XP_REWARDS.PERFECT_SCORE_BONUS;
+    }
+
+    // d) First-time play bonus — check for any OTHER completed attempt on this quiz
+    const previousAttemptCount = await prisma.quizAttempt.count({
+      where: {
+        userId,
+        quizId: attempt.quizId,
+        completedAt: { not: null },
+        id: { not: attemptId }, // exclude the current attempt being finalized
+      },
+    });
+    if (previousAttemptCount === 0) {
+      xpEarned += XP_REWARDS.FIRST_TIME_PLAY;
+    }
+
+    // e) Apply difficulty multiplier
     const difficultyMultipliers = { Easy: 1, Medium: 1.5, Hard: 2 };
     const multiplier = difficultyMultipliers[attempt.quiz.difficulty] || 1;
-    const totalXPEarned = Math.round(attempt.score * multiplier);
+    const totalXPEarned = Math.round(xpEarned * multiplier);
 
-    // 4. GAMIFICATION UPDATES (User Profile)
+    // 5. GAMIFICATION UPDATES (User Profile)
     const user = await prisma.user.findUnique({ where: { id: userId } });
-
-    // Level Up Logic: Every 1000 XP is a new level (Example)
     const newTotalXP = user.xp + totalXPEarned;
-    const newLevel = Math.floor(newTotalXP / 1000) + 1;
-
-    // Streak Logic: Check if they played in the last 24-48 hours
-    // (Actual streak logic usually compares 'yesterday' to 'today')
-    let streakIncrement = 0;
-    // Simplified: Give a streak boost if they completed the quiz
+    const newLevel   = getLevelFromXP(newTotalXP);
+    const didLevelUp = newLevel > user.level;
     const updatedStreak = user.streak + 1;
 
-    // 5. UPDATE EVERYTHING TRANSACTIONALLY
+    // 6. UPDATE EVERYTHING TRANSACTIONALLY
     await prisma.$transaction([
       // A. Mark Attempt as Complete
       prisma.quizAttempt.update({
         where: { id: attemptId },
         data: {
-          accuracy,
+          accuracy: scorePercentage,
           xpEarned: totalXPEarned,
           completedAt: new Date(),
         },
@@ -492,22 +815,26 @@ async function completeQuiz(req, res) {
       }),
     ]);
 
-    // 6. RESPONSE: The "Victory" Screen Data
+    // 7. RESPONSE: The "Victory" Screen Data
     console.log("Quiz summary data sent:", {
-      score: attempt.score,
-      accuracy,
+      score: scorePercentage,
+      questionsAnsweredCorrectly: correctAnswersCount,
+      totalQuestions,
       xpEarned: totalXPEarned,
-      levelUp: newLevel > user.level,
+      levelUp: didLevelUp,
+      correctAnswers,
       newLevel,
     });
     return res.status(200).json({
       success: true,
       message: "Quiz completed! Great job.",
       data: {
-        score: attempt.score,
-        accuracy,
-        xpEarned: totalXPEarned, // Integer value representing XP earned
-        levelUp: newLevel > user.level, // Boolean to trigger a confetti animation
+        score: scorePercentage,                       // e.g. 80 → "80%"
+        questionsAnsweredCorrectly: correctAnswersCount, // e.g. 8
+        totalQuestions,                               // e.g. 10 → display "8/10"
+        xpEarned: totalXPEarned,
+        levelUp: didLevelUp,                          // trigger confetti on frontend
+        correctAnswers,
         newLevel,
       },
     });
@@ -523,4 +850,14 @@ async function completeQuiz(req, res) {
 
 
 
-export { getQuizCategories, getAllQuizzes, createQuiz,startQuiz, getQuizbyId,submitAnswer,completeQuiz };
+export { 
+  getQuizCategories, 
+  getAllQuizzes, 
+  createQuiz, 
+  startQuiz, 
+  getQuizbyId, 
+  submitAnswer, 
+  completeQuiz, 
+  updateQuiz, 
+  deleteQuiz 
+};

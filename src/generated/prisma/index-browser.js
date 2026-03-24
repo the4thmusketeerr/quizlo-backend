@@ -132,6 +132,7 @@ exports.Prisma.UserScalarFieldEnum = {
   xp: 'xp',
   level: 'level',
   streak: 'streak',
+  lastLoginDate: 'lastLoginDate',
   resetPasswordToken: 'resetPasswordToken',
   resetPasswordExpiry: 'resetPasswordExpiry',
   createdAt: 'createdAt',

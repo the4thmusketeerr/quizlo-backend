@@ -2481,6 +2481,7 @@ export namespace Prisma {
     xp: number | null
     level: number | null
     streak: number | null
+    lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
     createdAt: Date | null
@@ -2499,6 +2500,7 @@ export namespace Prisma {
     xp: number | null
     level: number | null
     streak: number | null
+    lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
     createdAt: Date | null
@@ -2517,6 +2519,7 @@ export namespace Prisma {
     xp: number
     level: number
     streak: number
+    lastLoginDate: number
     resetPasswordToken: number
     resetPasswordExpiry: number
     createdAt: number
@@ -2549,6 +2552,7 @@ export namespace Prisma {
     xp?: true
     level?: true
     streak?: true
+    lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
     createdAt?: true
@@ -2567,6 +2571,7 @@ export namespace Prisma {
     xp?: true
     level?: true
     streak?: true
+    lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
     createdAt?: true
@@ -2585,6 +2590,7 @@ export namespace Prisma {
     xp?: true
     level?: true
     streak?: true
+    lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
     createdAt?: true
@@ -2690,6 +2696,7 @@ export namespace Prisma {
     xp: number
     level: number
     streak: number
+    lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
     createdAt: Date
@@ -2727,6 +2734,7 @@ export namespace Prisma {
     xp?: boolean
     level?: boolean
     streak?: boolean
+    lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
     createdAt?: boolean
@@ -2753,6 +2761,7 @@ export namespace Prisma {
     xp?: boolean
     level?: boolean
     streak?: boolean
+    lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
     createdAt?: boolean
@@ -2771,6 +2780,7 @@ export namespace Prisma {
     xp?: boolean
     level?: boolean
     streak?: boolean
+    lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
     createdAt?: boolean
@@ -2789,13 +2799,14 @@ export namespace Prisma {
     xp?: boolean
     level?: boolean
     streak?: boolean
+    lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "username" | "email" | "password" | "profilePicture" | "bio" | "xp" | "level" | "streak" | "resetPasswordToken" | "resetPasswordExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "username" | "email" | "password" | "profilePicture" | "bio" | "xp" | "level" | "streak" | "lastLoginDate" | "resetPasswordToken" | "resetPasswordExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quizzes?: boolean | User$quizzesArgs<ExtArgs>
     hostedGameSessions?: boolean | User$hostedGameSessionsArgs<ExtArgs>
@@ -2832,6 +2843,7 @@ export namespace Prisma {
       xp: number
       level: number
       streak: number
+      lastLoginDate: Date | null
       resetPasswordToken: string | null
       resetPasswordExpiry: Date | null
       createdAt: Date
@@ -3277,6 +3289,7 @@ export namespace Prisma {
     readonly xp: FieldRef<"User", 'Int'>
     readonly level: FieldRef<"User", 'Int'>
     readonly streak: FieldRef<"User", 'Int'>
+    readonly lastLoginDate: FieldRef<"User", 'DateTime'>
     readonly resetPasswordToken: FieldRef<"User", 'String'>
     readonly resetPasswordExpiry: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
@@ -18951,6 +18964,7 @@ export namespace Prisma {
     xp: 'xp',
     level: 'level',
     streak: 'streak',
+    lastLoginDate: 'lastLoginDate',
     resetPasswordToken: 'resetPasswordToken',
     resetPasswordExpiry: 'resetPasswordExpiry',
     createdAt: 'createdAt',
@@ -19339,6 +19353,7 @@ export namespace Prisma {
     xp?: IntFilter<"User"> | number
     level?: IntFilter<"User"> | number
     streak?: IntFilter<"User"> | number
+    lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -19364,6 +19379,7 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     streak?: SortOrder
+    lastLoginDate?: SortOrderInput | SortOrder
     resetPasswordToken?: SortOrderInput | SortOrder
     resetPasswordExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -19392,6 +19408,7 @@ export namespace Prisma {
     xp?: IntFilter<"User"> | number
     level?: IntFilter<"User"> | number
     streak?: IntFilter<"User"> | number
+    lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
@@ -19417,6 +19434,7 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     streak?: SortOrder
+    lastLoginDate?: SortOrderInput | SortOrder
     resetPasswordToken?: SortOrderInput | SortOrder
     resetPasswordExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -19443,6 +19461,7 @@ export namespace Prisma {
     xp?: IntWithAggregatesFilter<"User"> | number
     level?: IntWithAggregatesFilter<"User"> | number
     streak?: IntWithAggregatesFilter<"User"> | number
+    lastLoginDate?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -20461,6 +20480,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -20486,6 +20506,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -20511,6 +20532,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20536,6 +20558,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20561,6 +20584,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -20579,6 +20603,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20597,6 +20622,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21779,6 +21805,7 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     streak?: SortOrder
+    lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
     createdAt?: SortOrder
@@ -21803,6 +21830,7 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     streak?: SortOrder
+    lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
     createdAt?: SortOrder
@@ -21821,6 +21849,7 @@ export namespace Prisma {
     xp?: SortOrder
     level?: SortOrder
     streak?: SortOrder
+    lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
     createdAt?: SortOrder
@@ -24816,6 +24845,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -24840,6 +24870,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -25045,6 +25076,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25069,6 +25101,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25218,6 +25251,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -25242,6 +25276,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -25335,6 +25370,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25359,6 +25395,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25883,6 +25920,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -25907,6 +25945,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -26051,6 +26090,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26075,6 +26115,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26251,6 +26292,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -26275,6 +26317,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -26392,6 +26435,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26416,6 +26460,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26687,6 +26732,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -26711,6 +26757,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -26834,6 +26881,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26858,6 +26906,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27090,6 +27139,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -27114,6 +27164,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -27154,6 +27205,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27178,6 +27230,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27202,6 +27255,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -27226,6 +27280,7 @@ export namespace Prisma {
     xp?: number
     level?: number
     streak?: number
+    lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
     createdAt?: Date | string
@@ -27266,6 +27321,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27290,6 +27346,7 @@ export namespace Prisma {
     xp?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     streak?: IntFieldUpdateOperationsInput | number
+    lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

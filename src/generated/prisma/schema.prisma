@@ -45,17 +45,18 @@ enum GameStatus {
 // Core user account — authentication, profile, gamification
 // ─────────────────────────────────────────────────────────────────────────────
 model User {
-  id             String  @id @default(cuid())
-  firstName      String  @map("first_name")
-  lastName       String  @map("last_name")
-  username       String  @unique
-  email          String  @unique
+  id             String    @id @default(cuid())
+  firstName      String    @map("first_name")
+  lastName       String    @map("last_name")
+  username       String    @unique
+  email          String    @unique
   password       String
-  profilePicture String? @map("profile_picture")
-  bio            String? @db.VarChar(200)
-  xp             Int     @default(0)
-  level          Int     @default(1)
-  streak         Int     @default(0)
+  profilePicture String?   @map("profile_picture")
+  bio            String?   @db.VarChar(200)
+  xp             Int       @default(0)
+  level          Int       @default(1)
+  streak         Int       @default(0)
+  lastLoginDate  DateTime? @map("last_login_date")
 
   // Password reset
   resetPasswordToken  String?   @map("reset_password_token")

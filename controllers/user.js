@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { cloudinary } from "../config/cloudinary.js";
+import { getLevelFromXP, getXPProgress, XP_REWARDS } from "../utils/xp.js";
 
 import "dotenv/config";
 import { z } from "zod";
@@ -25,11 +26,35 @@ async function getUser(req, res) {
       });
     }
 
+    // ── Daily Login XP (once per calendar day) ──────────────────────────────
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // normalize to midnight
+    const lastLogin = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
+    const alreadyLoggedInToday = lastLogin && lastLogin >= today;
+
+    let dailyLoginXP = 0;
+    if (!alreadyLoggedInToday) {
+      dailyLoginXP = XP_REWARDS.DAILY_LOGIN;
+      const newTotalXP = user.xp + dailyLoginXP;
+      const newLevel   = getLevelFromXP(newTotalXP);
+
+      const updated = await prisma.user.update({
+        where: { id: user.id },
+        data: { xp: newTotalXP, level: newLevel, lastLoginDate: new Date() },
+      });
+      // Reflect changes in the user object we're about to return
+      user.xp    = updated.xp;
+      user.level = updated.level;
+      user.lastLoginDate = updated.lastLoginDate;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     delete user.password;
 
     return res.status(200).json({
       success: true,
       data: user,
+      dailyLoginXP, // 0 if already logged in today, 15 if first login of the day
     });
   } catch (error) {
     console.error("Error getting user:", error);
@@ -379,8 +404,8 @@ async function getUserDashboard(req, res) {
         },
         recentActivity,
         goals: {
-          xpToNextLevel: 1000 - (user.xp % 1000),
-          progressPercentage: (user.xp % 1000) / 10,
+          xpProgress: getXPProgress(user.xp),
+          // Shape: { currentLevel, label, tier, xpIntoLevel, xpToNextLevel, progressPercentage }
         },
       },
     });
