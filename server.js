@@ -19,7 +19,10 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://quizlo.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://quizlo-backend-4lb3.onrender.com",
+    ],
     credentials: true,
   }),
 );
