@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { cloudinary } from "../config/cloudinary.js";
 import { getLevelFromXP, getXPProgress, XP_REWARDS } from "../utils/xp.js";
+import { sendNewEmailVerification } from "../services/email.service.js";
 
 import "dotenv/config";
 import { z } from "zod";
@@ -242,6 +243,130 @@ async function changePassword(req, res) {
   }
 }
 
+async function changeUsername(req, res) {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide a username",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    // Check if username already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: "Username already exists",
+      });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { username },
+    });
+
+    delete updatedUser.password;
+
+    return res.status(200).json({
+      success: true,
+      message: "Username changed successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error changing username:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to change username",
+    });
+  }
+}
+
+async function changeEmail(req, res) {
+  try {
+    const { newEmail, password } = req.body;
+
+    if (!newEmail || !password) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide an email and password",
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    const isPasswordValid = await comparePassword(
+      password,
+      user.password,
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        error: "Invalid password",
+      });
+    }
+
+    // Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: newEmail },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        error: "Email already exists",
+      });
+    }
+
+    
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { email: newEmail }, // update the email field of the User table with the new email
+    });
+    
+    delete updatedUser.password;
+
+    return res.status(200).json({
+      success: true,
+      message: "Email changed successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error changing email:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to change email",
+    });
+  }
+}
+
 /**
  * Upload a profile picture for the authenticated user
  * @route POST /user/profile-picture
@@ -358,6 +483,9 @@ async function getUserDashboard(req, res) {
       where: { id: userId },
       select: {
         username: true,
+        firstName: true,
+        lastName: true,
+        email: true,
         profilePicture: true,
         xp: true,
         level: true,
@@ -521,5 +649,7 @@ export {
   deleteProfilePicture,
   getUserQuizzes,
   getUserDashboard,
-  rateQuiz
+  rateQuiz,
+  changeUsername,
+  changeEmail,
 };

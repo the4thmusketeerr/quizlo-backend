@@ -69,6 +69,7 @@ async function createQuiz(req, res) {
         isDraft: payload.isDraft,
         creationMode: payload.creationMode,
         plays: payload.plays || 0,
+        coverPicture: payload.coverPicture,
         creatorId: creatorId,
         categoryId: payload.categoryId,
         questions: {

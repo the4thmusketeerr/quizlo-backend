@@ -7,7 +7,9 @@ import {
   deleteProfilePicture,
   getUserQuizzes,
   getUserDashboard,
-  rateQuiz
+  changeEmail,
+  rateQuiz,
+  changeUsername,
 } from "../controllers/user.js";
 import { verifyToken } from "../middleware/token.js";
 import { upload } from "../middleware/upload.js";
@@ -22,6 +24,8 @@ userRouter.patch("/change-password", verifyToken, changePassword);
 userRouter.get("/quizzes", verifyToken, getUserQuizzes);
 userRouter.get("/dashboard", verifyToken, getUserDashboard);
 userRouter.post("/rate-quiz", verifyToken, rateQuiz);
+userRouter.patch("/change-username", verifyToken, changeUsername);
+userRouter.patch("/change-email", verifyToken, changeEmail);
 userRouter.patch(
   "/profile-picture",
   verifyToken,

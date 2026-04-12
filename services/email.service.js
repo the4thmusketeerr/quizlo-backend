@@ -32,3 +32,28 @@ export const sendResetEmail = async (email, resetURL) => {
     throw new Error(`Failed to send reset email: ${error.message}`);
   }
 };
+
+
+export const sendNewEmailVerification = async (email, verificationURL) => {
+  const mailOptions = {
+    from: `"Quizlo" <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: "Verify Your Email",
+    html: `
+      <h2>Email Verification</h2>
+      <p>You requested to change your email.</p>
+      <p>Click below to verify your new email:</p>
+      <a href="${verificationURL}">${verificationURL}</a>
+      <p>This link expires in 15 minutes.</p>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email verification sent successfully:", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("Email verification send error:", error);
+    throw new Error(`Failed to send email verification: ${error.message}`);
+  }
+};
