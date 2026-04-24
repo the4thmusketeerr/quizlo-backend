@@ -2,7 +2,12 @@ import { prisma } from "../lib/prisma.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { cloudinary } from "../config/cloudinary.js";
 import { getLevelFromXP, getXPProgress, XP_REWARDS } from "../utils/xp.js";
-import { sendNewEmailVerification } from "../services/email.service.js";
+import {
+  sendNewEmailVerification,
+  sendEmailChangeNotice,
+  sendEmailChangeConfirmation,
+} from "../services/email.service.js";
+import crypto from "crypto";
 
 import "dotenv/config";
 import { z } from "zod";
@@ -298,6 +303,13 @@ async function changeUsername(req, res) {
   }
 }
 
+/**
+ * Step 1 – Initiate an email change.
+ * Validates the user's password, stages the new address, and sends:
+ *   • A verification link to the NEW email
+ *   • A security notice to the OLD email
+ * @route PATCH /user/change-email
+ */
 async function changeEmail(req, res) {
   try {
     const { newEmail, password } = req.body;
@@ -305,7 +317,7 @@ async function changeEmail(req, res) {
     if (!newEmail || !password) {
       return res.status(400).json({
         success: false,
-        error: "Please provide an email and password",
+        error: "Please provide a new email and your current password",
       });
     }
 
@@ -320,11 +332,8 @@ async function changeEmail(req, res) {
       });
     }
 
-    const isPasswordValid = await comparePassword(
-      password,
-      user.password,
-    );
-
+    // Confirm the request is coming from the real owner
+    const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -332,40 +341,134 @@ async function changeEmail(req, res) {
       });
     }
 
-    // Check if email already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: newEmail },
-    });
-
-    if (existingUser) {
-      return res.status(409).json({
+    // Reject if they're requesting the same address they already have
+    if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+      return res.status(400).json({
         success: false,
-        error: "Email already exists",
+        error: "New email is the same as your current email",
       });
     }
 
-    
-
-    const updatedUser = await prisma.user.update({
-      where: { id: req.user.id },
-      data: { email: newEmail }, // update the email field of the User table with the new email
+    // Reject if the new address is already taken by another account
+    const emailTaken = await prisma.user.findFirst({
+      where: {
+        email: { equals: newEmail, mode: "insensitive" },
+        id: { not: req.user.id },
+      },
     });
-    
-    delete updatedUser.password;
+    if (emailTaken) {
+      return res.status(409).json({
+        success: false,
+        error: "That email address is already in use",
+      });
+    }
+
+    // Generate a secure, time-limited token (expires in 15 minutes)
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    // Stage the pending change — do NOT touch user.email yet
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        pendingEmail: newEmail,
+        emailChangeToken: token,
+        emailChangeExpiry: expiry,
+      },
+    });
+
+    const verificationURL = `${process.env.CLIENT_URL}/settings/verify-email-change?token=${token}`;
+
+    // Fire both emails concurrently (non-blocking to the response)
+    await Promise.allSettled([
+      sendNewEmailVerification(newEmail, verificationURL),
+      sendEmailChangeNotice(user.email, newEmail),
+    ]);
 
     return res.status(200).json({
       success: true,
-      message: "Email changed successfully",
-      data: updatedUser,
+      message:
+        "Verification email sent. Please check your new inbox — the link expires in 15 minutes.",
     });
   } catch (error) {
-    console.error("Error changing email:", error);
+    console.error("Error initiating email change:", error);
     return res.status(500).json({
       success: false,
-      error: "Failed to change email",
+      error: "Failed to initiate email change",
     });
   }
 }
+
+/**
+ * Step 2 – Verify the email change token and commit the swap.
+ * Replaces the primary email with the verified pending email and
+ * notifies both the new and the old address.
+ * @route POST /user/verify-email-change
+ */
+async function verifyEmailChange(req, res) {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: "Verification token is required",
+      });
+    }
+
+    // Find the user who owns this token (no auth middleware needed —
+    // the token itself is the proof of identity)
+    const user = await prisma.user.findFirst({
+      where: {
+        emailChangeToken: token,
+        emailChangeExpiry: { gt: new Date() }, // not expired
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid or expired verification token",
+      });
+    }
+
+    const oldEmail = user.email;
+    const newEmail = user.pendingEmail;
+
+    // Commit the swap and clear all pending-change fields atomically
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: newEmail,
+        pendingEmail: null,
+        emailChangeToken: null,
+        emailChangeExpiry: null,
+      },
+    });
+
+    delete updatedUser.password;
+
+    // Send success notifications to both addresses
+    await Promise.allSettled([
+      sendEmailChangeConfirmation(newEmail, true),  // new address
+      sendEmailChangeConfirmation(oldEmail, false), // old address
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email address updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error("Error verifying email change:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to verify email change",
+    });
+  }
+}
+
+
 
 /**
  * Upload a profile picture for the authenticated user
@@ -652,4 +755,5 @@ export {
   rateQuiz,
   changeUsername,
   changeEmail,
+  verifyEmailChange,
 };

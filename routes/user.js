@@ -8,6 +8,7 @@ import {
   getUserQuizzes,
   getUserDashboard,
   changeEmail,
+  verifyEmailChange,
   rateQuiz,
   changeUsername,
 } from "../controllers/user.js";
@@ -26,6 +27,7 @@ userRouter.get("/dashboard", verifyToken, getUserDashboard);
 userRouter.post("/rate-quiz", verifyToken, rateQuiz);
 userRouter.patch("/change-username", verifyToken, changeUsername);
 userRouter.patch("/change-email", verifyToken, changeEmail);
+userRouter.post("/verify-email-change", verifyEmailChange);
 userRouter.patch(
   "/profile-picture",
   verifyToken,

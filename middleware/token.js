@@ -3,7 +3,7 @@ import "dotenv/config";
 
 export function verifyToken(req, res, next) {
   try {
-    // 1. Read token from the "token" cookie OR the Authorization header
+    // 1. Read token from the cookie OR the Authorization header
     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
     //console.log("token:",token);
     if (!token) {

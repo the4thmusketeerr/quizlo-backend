@@ -2484,6 +2484,9 @@ export namespace Prisma {
     lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
+    pendingEmail: string | null
+    emailChangeToken: string | null
+    emailChangeExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2503,6 +2506,9 @@ export namespace Prisma {
     lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
+    pendingEmail: string | null
+    emailChangeToken: string | null
+    emailChangeExpiry: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2522,6 +2528,9 @@ export namespace Prisma {
     lastLoginDate: number
     resetPasswordToken: number
     resetPasswordExpiry: number
+    pendingEmail: number
+    emailChangeToken: number
+    emailChangeExpiry: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2555,6 +2564,9 @@ export namespace Prisma {
     lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
+    pendingEmail?: true
+    emailChangeToken?: true
+    emailChangeExpiry?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2574,6 +2586,9 @@ export namespace Prisma {
     lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
+    pendingEmail?: true
+    emailChangeToken?: true
+    emailChangeExpiry?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2593,6 +2608,9 @@ export namespace Prisma {
     lastLoginDate?: true
     resetPasswordToken?: true
     resetPasswordExpiry?: true
+    pendingEmail?: true
+    emailChangeToken?: true
+    emailChangeExpiry?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2699,6 +2717,9 @@ export namespace Prisma {
     lastLoginDate: Date | null
     resetPasswordToken: string | null
     resetPasswordExpiry: Date | null
+    pendingEmail: string | null
+    emailChangeToken: string | null
+    emailChangeExpiry: Date | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2737,6 +2758,9 @@ export namespace Prisma {
     lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
+    pendingEmail?: boolean
+    emailChangeToken?: boolean
+    emailChangeExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quizzes?: boolean | User$quizzesArgs<ExtArgs>
@@ -2764,6 +2788,9 @@ export namespace Prisma {
     lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
+    pendingEmail?: boolean
+    emailChangeToken?: boolean
+    emailChangeExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2783,6 +2810,9 @@ export namespace Prisma {
     lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
+    pendingEmail?: boolean
+    emailChangeToken?: boolean
+    emailChangeExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2802,11 +2832,14 @@ export namespace Prisma {
     lastLoginDate?: boolean
     resetPasswordToken?: boolean
     resetPasswordExpiry?: boolean
+    pendingEmail?: boolean
+    emailChangeToken?: boolean
+    emailChangeExpiry?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "username" | "email" | "password" | "profilePicture" | "bio" | "xp" | "level" | "streak" | "lastLoginDate" | "resetPasswordToken" | "resetPasswordExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "username" | "email" | "password" | "profilePicture" | "bio" | "xp" | "level" | "streak" | "lastLoginDate" | "resetPasswordToken" | "resetPasswordExpiry" | "pendingEmail" | "emailChangeToken" | "emailChangeExpiry" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     quizzes?: boolean | User$quizzesArgs<ExtArgs>
     hostedGameSessions?: boolean | User$hostedGameSessionsArgs<ExtArgs>
@@ -2846,6 +2879,9 @@ export namespace Prisma {
       lastLoginDate: Date | null
       resetPasswordToken: string | null
       resetPasswordExpiry: Date | null
+      pendingEmail: string | null
+      emailChangeToken: string | null
+      emailChangeExpiry: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -3292,6 +3328,9 @@ export namespace Prisma {
     readonly lastLoginDate: FieldRef<"User", 'DateTime'>
     readonly resetPasswordToken: FieldRef<"User", 'String'>
     readonly resetPasswordExpiry: FieldRef<"User", 'DateTime'>
+    readonly pendingEmail: FieldRef<"User", 'String'>
+    readonly emailChangeToken: FieldRef<"User", 'String'>
+    readonly emailChangeExpiry: FieldRef<"User", 'DateTime'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -18967,6 +19006,9 @@ export namespace Prisma {
     lastLoginDate: 'lastLoginDate',
     resetPasswordToken: 'resetPasswordToken',
     resetPasswordExpiry: 'resetPasswordExpiry',
+    pendingEmail: 'pendingEmail',
+    emailChangeToken: 'emailChangeToken',
+    emailChangeExpiry: 'emailChangeExpiry',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -19356,6 +19398,9 @@ export namespace Prisma {
     lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    pendingEmail?: StringNullableFilter<"User"> | string | null
+    emailChangeToken?: StringNullableFilter<"User"> | string | null
+    emailChangeExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     quizzes?: QuizListRelationFilter
@@ -19382,6 +19427,9 @@ export namespace Prisma {
     lastLoginDate?: SortOrderInput | SortOrder
     resetPasswordToken?: SortOrderInput | SortOrder
     resetPasswordExpiry?: SortOrderInput | SortOrder
+    pendingEmail?: SortOrderInput | SortOrder
+    emailChangeToken?: SortOrderInput | SortOrder
+    emailChangeExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quizzes?: QuizOrderByRelationAggregateInput
@@ -19411,6 +19459,9 @@ export namespace Prisma {
     lastLoginDate?: DateTimeNullableFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
+    pendingEmail?: StringNullableFilter<"User"> | string | null
+    emailChangeToken?: StringNullableFilter<"User"> | string | null
+    emailChangeExpiry?: DateTimeNullableFilter<"User"> | Date | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     quizzes?: QuizListRelationFilter
@@ -19437,6 +19488,9 @@ export namespace Prisma {
     lastLoginDate?: SortOrderInput | SortOrder
     resetPasswordToken?: SortOrderInput | SortOrder
     resetPasswordExpiry?: SortOrderInput | SortOrder
+    pendingEmail?: SortOrderInput | SortOrder
+    emailChangeToken?: SortOrderInput | SortOrder
+    emailChangeExpiry?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -19464,6 +19518,9 @@ export namespace Prisma {
     lastLoginDate?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     resetPasswordToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     resetPasswordExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    pendingEmail?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailChangeToken?: StringNullableWithAggregatesFilter<"User"> | string | null
+    emailChangeExpiry?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -20483,6 +20540,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -20509,6 +20569,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -20535,6 +20598,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -20561,6 +20627,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -20587,6 +20656,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20606,6 +20678,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20625,6 +20700,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21808,6 +21886,9 @@ export namespace Prisma {
     lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
+    pendingEmail?: SortOrder
+    emailChangeToken?: SortOrder
+    emailChangeExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21833,6 +21914,9 @@ export namespace Prisma {
     lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
+    pendingEmail?: SortOrder
+    emailChangeToken?: SortOrder
+    emailChangeExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21852,6 +21936,9 @@ export namespace Prisma {
     lastLoginDate?: SortOrder
     resetPasswordToken?: SortOrder
     resetPasswordExpiry?: SortOrder
+    pendingEmail?: SortOrder
+    emailChangeToken?: SortOrder
+    emailChangeExpiry?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24848,6 +24935,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     hostedGameSessions?: GameSessionCreateNestedManyWithoutHostInput
@@ -24873,6 +24963,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     hostedGameSessions?: GameSessionUncheckedCreateNestedManyWithoutHostInput
@@ -25079,6 +25172,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hostedGameSessions?: GameSessionUpdateManyWithoutHostNestedInput
@@ -25104,6 +25200,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     hostedGameSessions?: GameSessionUncheckedUpdateManyWithoutHostNestedInput
@@ -25254,6 +25353,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -25279,6 +25381,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -25373,6 +25478,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -25398,6 +25506,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -25923,6 +26034,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -25948,6 +26062,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -26093,6 +26210,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -26118,6 +26238,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -26295,6 +26418,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -26320,6 +26446,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -26438,6 +26567,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -26463,6 +26595,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -26735,6 +26870,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -26760,6 +26898,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -26884,6 +27025,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -26909,6 +27053,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -27142,6 +27289,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -27167,6 +27317,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -27208,6 +27361,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -27233,6 +27389,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput
@@ -27258,6 +27417,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizCreateNestedManyWithoutCreatorInput
@@ -27283,6 +27445,9 @@ export namespace Prisma {
     lastLoginDate?: Date | string | null
     resetPasswordToken?: string | null
     resetPasswordExpiry?: Date | string | null
+    pendingEmail?: string | null
+    emailChangeToken?: string | null
+    emailChangeExpiry?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quizzes?: QuizUncheckedCreateNestedManyWithoutCreatorInput
@@ -27324,6 +27489,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUpdateManyWithoutCreatorNestedInput
@@ -27349,6 +27517,9 @@ export namespace Prisma {
     lastLoginDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     resetPasswordToken?: NullableStringFieldUpdateOperationsInput | string | null
     resetPasswordExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    pendingEmail?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeToken?: NullableStringFieldUpdateOperationsInput | string | null
+    emailChangeExpiry?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quizzes?: QuizUncheckedUpdateManyWithoutCreatorNestedInput

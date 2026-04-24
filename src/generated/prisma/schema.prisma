@@ -62,6 +62,11 @@ model User {
   resetPasswordToken  String?   @map("reset_password_token")
   resetPasswordExpiry DateTime? @map("reset_password_expiry")
 
+  // Email change
+  pendingEmail      String?   @map("pending_email")
+  emailChangeToken  String?   @map("email_change_token")
+  emailChangeExpiry DateTime? @map("email_change_expiry")
+
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -76,6 +81,7 @@ model User {
   ratings                QuizRating[]
 
   @@index([resetPasswordToken])
+  @@index([emailChangeToken])
   @@map("users")
 }
 

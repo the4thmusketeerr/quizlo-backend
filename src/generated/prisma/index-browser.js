@@ -135,6 +135,9 @@ exports.Prisma.UserScalarFieldEnum = {
   lastLoginDate: 'lastLoginDate',
   resetPasswordToken: 'resetPasswordToken',
   resetPasswordExpiry: 'resetPasswordExpiry',
+  pendingEmail: 'pendingEmail',
+  emailChangeToken: 'emailChangeToken',
+  emailChangeExpiry: 'emailChangeExpiry',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
